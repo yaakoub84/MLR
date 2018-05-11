@@ -1,0 +1,32 @@
+#Load librairies
+library(ggplot2)
+#read excel file library
+library(xlsx)
+#Forecast Library
+library(fpp2)
+#Machine learning Library
+library(caret)
+library("tfsknn")
+#Read excel file
+puissance <- read.xlsx("G:/Users/user/Desktop/Machine learning/dataset.xlsx",sheetName="Feuil1")
+dataset <- puissance
+#column names
+colnames(dataset) <- c("Température","puissance (MW)")
+# create a list of 80% of the rows in the original dataset we can use for training
+validation_index <- createDataPartition(dataset$`puissance (MW), p=0.80, list=FALSE)
+# select 20% of the data for validation
+validation <- dataset[-validation_index,]
+# use the remaining 80% of data to training and testing the models
+dataset <- dataset[validation_index,]
+# dimensions of dataset
+dim(dataset)
+# take a peek at the first 5 rows of the data
+head(dataset)
+x <- dataset [,1]
+y <- dataset [,2]
+#graphics
+psh <- ts(y)
+p1 <- autoplot(psh)+ggtitle("puissance électrique consommée 2013-2016")+xlab("Années 2013-2016")+ylab("Puissance(MW)")
+p1 + theme(legend.position="none")
+pred <- knn_forecasting(psh, h = 48, k = 3)
+pred$prediction
